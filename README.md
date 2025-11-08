@@ -1,42 +1,35 @@
-+----------------+
-|                |
-|  Code Push     |
-+-------+--------+
-        |
-        v
-+----------------+
-| GitHub Repo    |
-| (Flask App)    |
-+-------+--------+
-        |
-        | triggers workflow
-        v
-+----------------------------+
-| GitHub Actions Pipeline    |
-| - Run tests                |
-| - Build Docker image       |
-| - Push to DockerHub        |
-| - Deploy to EC2 via SSH    |
-+---------------+------------+
-                |
-                v
-       +----------------+
-       | DockerHub      |
-       | (Image Store)  |
-       +-------+--------+
-               |
-               v
-       +----------------+
-       | AWS EC2        |
-       | Docker Run App |
-       +-------+--------+
-               |
-               v
-       +----------------+
-       | User Browser   |
-       | Access App     |
-       +----------------+
-# trigger deploy
-# retry docker push
-# validation trigger
-# redeploy trigger Sat Nov  8 18:07:12 IST 2025
+          ┌───────────────────────────────┐
+          │        Developer              │
+          │   Push code to GitHub repo    │
+          └──────────────┬────────────────┘
+                         │
+                         ▼
+          ┌───────────────────────────────┐
+          │        GitHub Actions          │
+          │  - Checkout Code               │
+          │  - Install Requirements        │
+          │  - Run Tests                   │
+          │  - Build Docker Image          │
+          │  - Push to DockerHub           │
+          └──────────────┬────────────────┘
+                         │
+                         ▼
+          ┌───────────────────────────────┐
+          │          DockerHub            │
+          │  Stores Image (flask-ci-cd)   │
+          └──────────────┬────────────────┘
+                         │
+                         ▼
+          ┌───────────────────────────────┐
+          │           AWS EC2             │
+          │ - Pulls latest image          │
+          │ - Runs container              │
+          │ - Exposes port 80             │
+          └──────────────┬────────────────┘
+                         │
+                         ▼
+          ┌───────────────────────────────┐
+          │         End User              │
+          │ Access app via EC2 public IP  │
+          │     http://<ec2-public-ip>    │
+          └───────────────────────────────┘
